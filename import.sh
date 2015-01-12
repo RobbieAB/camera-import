@@ -1,24 +1,29 @@
 #!/bin/sh
 
 archive(){
+  # Returns the following error codes:
+  #  1 - No argument provided, or too many arguments provided.
+  #  2 - File not found.
+  #  3 - Archive directory does not exist.
+  #  4 - The archive directory exists but is not a directory.
+  #  5 - File already exists in archive.
+
   local arcdir="/home/robert/Pictures/Photos"
 
-  if [ ! -d "$arcdir" ] ; then
-    echo "Archive directory does not exist."
-    return 1
-  fi
-
   if [ "$#" -ne 1 ] ; then
-    echo "No argument provided, or too many arguments provided."
     return 1
   fi
 
   if [ ! -f "$1" ] ; then
-    echo "File not found. Can't find file: $1."
     return 2
   fi
 
   local filedate=$( date -r "$1" +%Y-%m-%d )
+
+  if [ ! -d "$arcdir" ] ; then
+    return 3
+  fi
+
   local destdir="$arcdir/$filedate"
 
   if [ ! -e "$destdir" ] ; then
@@ -26,13 +31,11 @@ archive(){
   fi
 
   if [ ! -d "$destdir" ] ; then
-    echo "The destination exists but is not a directory"
-    return 3
+    return 4
   fi
 
   if [ -a "$destdir/$1" ] ; then 
-    echo "$1 already exists in archive"
-    return 1
+    return 5
   fi
 
   cp "$1" "$destdir/"
