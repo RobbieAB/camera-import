@@ -38,7 +38,7 @@ archive(){
     return 5
   fi
 
-  cp "$1" "$destdir/"
+  cp "$1" "$destdir/" > /dev/null 2>&1 
 }
 
 archive $1
